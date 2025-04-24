@@ -1,26 +1,28 @@
 import { Button } from "@/components/ui/button";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createNewNote, getNotes } from "@/server";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { PlusIcon } from "lucide-react";
 
 export const Route = createFileRoute("/notes/")({
   component: RouteComponent,
+  loader: async () => await getNotes(),
 });
 
-const notes = [
-  { title: "title 1", id: "1" },
-  { title: "title 2", id: "2" },
-  { title: "title 3", id: "3" },
-  { title: "title 4", id: "4" },
-  { title: "title 5", id: "5" },
-  { title: "title 6", id: "6" },
-  { title: "title 7", id: "7" },
-];
 function RouteComponent() {
+  const notes = Route.useLoaderData();
+  const navigate = useNavigate();
   return (
     <div className=" grid h-screen grid-rows-[min-content_1fr] gap-2">
       <div className="border-b-2 p-2 flex justify-between items-center">
         <h1>Notes</h1>
-        <Button size={"sm"}>
+        <Button
+          size={"sm"}
+          onClick={() =>
+            createNewNote().then((newNote) =>
+              navigate({ to: "/notes/$id", params: { id: newNote.id } })
+            )
+          }
+        >
           <PlusIcon />
           Add Note
         </Button>
